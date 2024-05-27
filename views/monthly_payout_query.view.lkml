@@ -2,47 +2,52 @@
 view: monthly_payout_query {
   derived_table: {
     sql: select
-          r.ref_number as 'memo_id',
-          DATE(r.create_date) AS 'create date',
-          DATE(b.booking_date) AS 'booking date',
-          rab.booking_id,
-          DATE(r.resolve_date),
-          DATE(raf.date_of_error)  as 'date_of_error',
-             CASE
-                 when b.site_id = '1' then 'FlightHub'
-                 when b.site_id = '4' then 'JustFly'
-                 else 'error'
-              END AS website,
-             #raf.fop,
-             r.currency,
-             r.amount,
-             raf.form_type,
-             r.error_source,
-             concat(a.first_name, ' ', a.last_name)   as 'agent_name',
-             concat(a2.first_name, ' ', a2.last_name) as 'agent_responsible_for_error',
-             r.team,
-             r.third_party_charge,
-             r.third_party,
-             r.source,
-             r.am_status,
-             r.am_type,
-             #r.win_lost_date,
-             r.am_cause,
-             r.error_cause,
-             b.validating_carrier,
-             b.gds 'GDS', b.gds_account_id,
-                   r.reason
-      FROM respro_am r
-               JOIN respro_am_bookings rab on r.id = rab.am_id
-               JOIN respro_am_forms raf on r.id = raf.am_id
-               JOIN bookings b on rab.booking_id = b.id
-               left join booking_tasks bt on raf.task_id = bt.id
-               left JOIN agents a ON a.id = bt.created_by
-               left join agents a2 on a2.id = r.error_creator_agent
-      WHERE
-          r.resolve_date BETWEEN CURRENT_DATE - INTERVAL 360 DAY AND CURRENT_DATE
-        and ISNULL(bt.parent_task_id)
-      ORDER BY r.create_date DESC ;;
+    r.ref_number as 'memo_id',
+    DATE(r.create_date) AS 'create date',
+    DATE(b.booking_date) AS 'booking date',
+    rab.booking_id,
+    DATE(r.resolve_date),
+    DATE(raf.date_of_error)  as 'date_of_error',
+       CASE
+           when b.site_id = '1' then 'FlightHub'
+           when b.site_id = '4' then 'JustFly'
+           else 'error'
+        END AS website,
+       #raf.fop,
+       r.currency,
+--        r.amount,
+       CASE
+        WHEN b.currency = 'USD'
+        THEN ROUND(r.amount * usd_cad, 2)
+        ELSE ROUND(r.amount, 2)
+       END AS 'amount',
+       raf.form_type,
+       r.error_source,
+       concat(a.first_name, ' ', a.last_name)   as 'agent_name',
+       concat(a2.first_name, ' ', a2.last_name) as 'agent_responsible_for_error',
+       r.team,
+       r.third_party_charge,
+       r.third_party,
+       r.source,
+       r.am_status,
+       r.am_type,
+       #r.win_lost_date,
+       r.am_cause,
+       r.error_cause,
+       b.validating_carrier,
+       b.gds 'GDS', b.gds_account_id,
+       r.reason
+FROM respro_am r
+         JOIN respro_am_bookings rab on r.id = rab.am_id
+         JOIN respro_am_forms raf on r.id = raf.am_id
+         JOIN bookings b on rab.booking_id = b.id
+         left join booking_tasks bt on raf.task_id = bt.id
+         left JOIN agents a ON a.id = bt.created_by
+         left join agents a2 on a2.id = r.error_creator_agent
+        JOIN currency_rates_history curr on curr.date_rated = date(booking_date)
+WHERE
+    r.resolve_date BETWEEN CURRENT_DATE - INTERVAL 360 DAY AND CURRENT_DATE
+ORDER BY r.amount DESC ;;
   }
 
   measure: count {
