@@ -20,7 +20,7 @@ view: monthly_payout_query {
         WHEN b.currency = 'USD'
         THEN ROUND(r.amount * usd_cad, 2)
         ELSE ROUND(r.amount, 2)
-       END AS 'CAD amount',
+       END AS 'CAD_amount',
        raf.form_type,
        r.error_source,
        concat(a.first_name, ' ', a.last_name)   as 'agent_name',
@@ -98,6 +98,11 @@ ORDER BY r.amount DESC ;;
   }
 
   dimension: amount {
+    type: number
+    sql: ${TABLE}.amount ;;
+  }
+
+  dimension: CAD_amount {
     type: number
     sql: ${TABLE}.amount ;;
   }
@@ -193,6 +198,7 @@ ORDER BY r.amount DESC ;;
   website,
   currency,
   amount,
+  CAD_amount,
   form_type,
   error_source,
   agent_name,
