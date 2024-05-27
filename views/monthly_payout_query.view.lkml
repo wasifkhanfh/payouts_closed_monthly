@@ -15,12 +15,12 @@ view: monthly_payout_query {
         END AS website,
        #raf.fop,
        r.currency,
---        r.amount,
+        r.amount,
        CASE
         WHEN b.currency = 'USD'
         THEN ROUND(r.amount * usd_cad, 2)
         ELSE ROUND(r.amount, 2)
-       END AS 'amount',
+       END AS 'CAD amount',
        raf.form_type,
        r.error_source,
        concat(a.first_name, ' ', a.last_name)   as 'agent_name',
