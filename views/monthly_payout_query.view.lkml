@@ -1,7 +1,7 @@
 
 view: monthly_payout_query {
   derived_table: {
-    sql: select 
+    sql: select
           r.ref_number as 'memo_id',
           DATE(r.create_date) AS 'create date',
           DATE(b.booking_date) AS 'booking date',
@@ -39,10 +39,8 @@ view: monthly_payout_query {
                left join booking_tasks bt on raf.task_id = bt.id
                left JOIN agents a ON a.id = bt.created_by
                left join agents a2 on a2.id = r.error_creator_agent
-      WHERE 
+      WHERE
           r.resolve_date BETWEEN CURRENT_DATE - INTERVAL 360 DAY AND CURRENT_DATE
-      --     AND r.error_source IN ('agent_pre_ticketing', 'agent_post_ticketing')
-      --     AND r.reason NOT IN ('Nominal Fare Increase', 'Blind Refund', 'Audit tool')
         and ISNULL(bt.parent_task_id)
       ORDER BY r.create_date DESC ;;
   }
@@ -182,30 +180,30 @@ view: monthly_payout_query {
   set: detail {
     fields: [
         memo_id,
-	create_date,
-	booking_date,
-	booking_id,
-	dater_resolve_date,
-	date_of_error,
-	website,
-	currency,
-	amount,
-	form_type,
-	error_source,
-	agent_name,
-	agent_responsible_for_error,
-	team,
-	third_party_charge,
-	third_party,
-	source,
-	am_status,
-	am_type,
-	am_cause,
-	error_cause,
-	validating_carrier,
-	gds,
-	gds_account_id,
-	reason
+  create_date,
+  booking_date,
+  booking_id,
+  dater_resolve_date,
+  date_of_error,
+  website,
+  currency,
+  amount,
+  form_type,
+  error_source,
+  agent_name,
+  agent_responsible_for_error,
+  team,
+  third_party_charge,
+  third_party,
+  source,
+  am_status,
+  am_type,
+  am_cause,
+  error_cause,
+  validating_carrier,
+  gds,
+  gds_account_id,
+  reason
     ]
   }
 }
