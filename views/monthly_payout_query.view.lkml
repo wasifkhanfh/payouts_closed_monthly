@@ -104,7 +104,7 @@ ORDER BY r.amount DESC ;;
 
   dimension: CAD_amount {
     type: number
-    sql: ${TABLE}.amount ;;
+    sql: ${TABLE}.CAD_amount ;;
   }
 
   dimension: form_type {
